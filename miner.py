@@ -1,18 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-
-# -*- Python -*-
-
-#*****************************************************************
-#
-#
-# WARRANTY:
-# Use all material in this file at your own risk. Hiranmoy Basak
-# makes no claims about any material contained in this file.
-#
-# Contact: hiranmoy.iitkgp@gmail.com
-
-
+# -*- Python 2.7 -*-
 
 import os
 import sys
@@ -20,6 +8,8 @@ import time
 import datetime
 import json
 import commands
+import httplib
+import requests
 
 from urllib import urlopen
 
@@ -31,9 +21,19 @@ gDebugMode = 0
 gGpuNotHashing = 0
 gLogFile = "/home/ethos/gpu_crash.log"
 
+# ================================ pushsafer.com Informations =============================
 
+gPrivateKey = "LtCft4UD1KYwTUElh1lF"
 
-# ================================   functions  =============================
+'''
+- Vous devez creer un compte ici https://www.pushsafer.com/ puis, confirmer votre adresse mail ;
+- Apres que cela soit fait, rendez vous ici https://www.pushsafer.com/en/apps pour installer l application sur vos smartphones ;
+- Quand l'application est installe, ouvrez la et allez ici: https://www.pushsafer.com/en/profile vous pourrez ainsi flasher le QR code et enregistrer votre smartphone ;
+- Direction https://www.pushsafer.com/en/dashboard, recuperez-y votre cle prive  Pushsafer et renseignez la plus haut ligne 38.
+
+'''
+
+# ================================  functions  =============================
 def DumpActivity(dumpStr):
   print dumpStr
 
@@ -150,6 +150,23 @@ while 1:
   # check if any gpu is down
   if (int(numRunningGpus) != int(numGpus)):
     if (gGpuNotHashing == 1):
+
+      url = 'https://www.pushsafer.com/api' # URL de destination
+      post_fields = {
+              "t" : "RIG: " + gRigName + " rebooting", # Titre de la notification
+              "m" : "Your rig : " + gRigName + " rebooting due to low HashRate: " + hashRate + ".", # Message (corp) de la notification
+              "s" : "",
+              "v" : "",
+              "i" : "37",
+              "c" : "",
+              "d" : "a",
+              "u" : gJsonSite.split('.')[0] + ".ethosdistro.com/graphs/?rig=" + gRigName + "&type=miner_hashes", # URL pour Android & IOS
+              "ut" : "Open graphs link", # Titre de l'URL
+              "k" : gPrivateKey} # Private key qui doit etre rensigne ligne 38
+
+      result = requests.post(url, data=post_fields)
+      DumpActivity(result)
+
       # reboot
       DumpActivity("Rebooting (" + str(hashRate) + ")")
       os.system("sudo reboot")
