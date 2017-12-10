@@ -23,7 +23,7 @@ gLogFile = "/home/ethos/gpu_crash.log"
 
 # ================================ pushsafer.com Informations =============================
 
-gPrivateKey = "LtCft4UD1KYwTUElh1lF"
+gPrivateKey = "gPrivateKey"
 
 '''
 - Vous devez creer un compte ici https://www.pushsafer.com/ puis, confirmer votre adresse mail ;
